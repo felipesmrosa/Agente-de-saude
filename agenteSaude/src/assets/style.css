@@ -20,15 +20,14 @@
 }
 
 p#menor {
-    font-size: 12px;
-    margin-bottom: 2px;
+  font-size: 14px;
+  margin-bottom: 2px;
 }
 
 a {
   color: #2f81fd;
   text-decoration: none;
-  font-weight: 800;
-  text-transform: uppercase;
+  margin-left: 4px;
 }
 
 .form {
@@ -55,7 +54,12 @@ a {
   max-width: 320px;
 }
 
+input#nome {
+  text-transform: capitalize;
+}
+
 .span input {
+  font-size: 16px;
   width: 100%;
   padding: 8px 12px;
   outline: none;
@@ -64,7 +68,9 @@ a {
 }
 
 textarea {
+  text-transform: capitalize;
   outline: none;
+  font-size: 16px;
   border: 1px solid #dbdbdb;
   border-radius: 6px;
   width: 100%;
@@ -127,14 +133,14 @@ ul {
 }
 
 .span label {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
 }
 
 .span label p {
-    font-size: 12px;
+  font-size: 12px;
 }
 
 #finalizado {

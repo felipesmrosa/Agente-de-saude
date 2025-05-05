@@ -125,9 +125,12 @@ export function App() {
         <strong>05/05/2025 versão de teste do n8n</strong>
       </p>
       <p id="menor">
-        Desenvolvido por:{" "}
+        Desenvolvido por:
         <strong>
-          <a target="_blank" href="https://github.com/felipesmrosa/Agente-de-saude">
+          <a
+            target="_blank"
+            href="https://github.com/felipesmrosa/Agente-de-saude"
+          >
             Felipe Miranda da Rosa
           </a>
         </strong>
@@ -139,6 +142,7 @@ export function App() {
           <input
             type="text"
             value={nome}
+            id="nome"
             onChange={(e) => setNome(e.target.value)}
           />
         </span>
