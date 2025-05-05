@@ -24,6 +24,13 @@ p#menor {
     margin-bottom: 2px;
 }
 
+a {
+  color: #2f81fd;
+  text-decoration: none;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
 .form {
   width: 100%;
   max-width: 353px;

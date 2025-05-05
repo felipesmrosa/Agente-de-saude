@@ -1,4 +1,8 @@
 import { useState } from "react";
+import {
+  enviarSintomas as apiEnviarSintomas,
+  finalizarAtendimento as apiFinalizarAtendimento,
+} from "@/services/api";
 
 export function App() {
   const [nome, setNome] = useState("");
@@ -12,7 +16,7 @@ export function App() {
     return /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email);
   }
 
-  async function enviarSintomas() {
+  const enviarSintomas = async () => {
     if (!emailEhGmail(email)) {
       setResposta("❌ Apenas endereços @gmail.com são aceitos.");
       return;
@@ -21,66 +25,52 @@ export function App() {
     setCarregando("Enviando mensagem...");
     setResposta("");
 
-    const payload = {
-      nome,
-      email,
-      data,
-      sintomas,
-      sessionKey: 1,
-    };
+    const formData = new FormData();
+    formData.append("nome", nome);
+    formData.append("email", email);
+    formData.append("data", data);
+    formData.append("sintomas", sintomas);
+    formData.append("sessionKey", 1);
 
     try {
-      const response = await fetch(
-        "https://fmrosa.app.n8n.cloud/webhook/principal",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }
-      );
-      const texto = await response.text();
+      const texto = await apiEnviarSintomas(formData);
       setResposta(texto);
     } catch (error) {
-      setResposta("❌ Erro ao enviar sintomas.");
+      setResposta(error.message || "❌ Erro ao enviar sintomas.");
       console.error(error);
     } finally {
       setCarregando("");
     }
-  }
+  };
 
-  async function finalizarAtendimento() {
+  const finalizarAtendimento = async () => {
     setCarregando("Finalizando atendimento...");
     setResposta("");
 
     try {
-      const response = await fetch(
-        "https://fmrosa.app.n8n.cloud/webhook/finalizar",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionKey: 1, nome, email, data }),
-        }
-      );
-      const texto = await response.text();
-      console.log("Finalização:", texto);
+      const texto = await apiFinalizarAtendimento({
+        sessionKey: 1,
+        nome,
+        email,
+        data,
+      });
       setResposta("✅ Atendimento finalizado.");
     } catch (error) {
-      setResposta("❌ Erro ao finalizar atendimento.");
+      setResposta(error.message || "❌ Erro ao finalizar atendimento.");
       console.error(error);
     } finally {
       setCarregando("");
     }
-  }
+  };
 
   function formatarResposta(texto) {
-    const linhas = texto.split(/\n+/); // Quebra por linhas
+    const linhas = texto.split(/\n+/);
     const elementos = [];
 
     linhas.forEach((linha, index) => {
       const trimmed = linha.trim();
       if (!trimmed) return;
 
-      // Detectar item de lista com hífen
       if (/^-\s/.test(trimmed)) {
         const match = trimmed.match(/^-\s\*\*(.+?)\*\*:? (.+)$/);
         if (match) {
@@ -93,7 +83,6 @@ export function App() {
           elementos.push(<li key={index}>{trimmed.slice(2)}</li>);
         }
       } else {
-        // Parágrafo com possível negrito
         const partesComNegrito = [];
         let restante = trimmed;
         let boldMatch;
@@ -115,7 +104,6 @@ export function App() {
       }
     });
 
-    // Agrupar <li> em <ul> automaticamente se houver itens
     const temLista = elementos.some((el) => el.type === "li");
 
     if (temLista) {
@@ -137,8 +125,14 @@ export function App() {
         <strong>05/05/2025 versão de teste do n8n</strong>
       </p>
       <p id="menor">
-        Desenvolvidor por: <strong>Felipe Miranda da Rosa</strong>
+        Desenvolvido por:{" "}
+        <strong>
+          <a target="_blank" href="https://github.com/felipesmrosa/Agente-de-saude">
+            Felipe Miranda da Rosa
+          </a>
+        </strong>
       </p>
+
       <div className="form">
         <span className="span">
           <label>Nome *</label>
@@ -150,7 +144,7 @@ export function App() {
         </span>
         <span className="span">
           <label>
-            Gmail <p>(real) </p> *
+            Gmail <p>(real)</p> *
           </label>
           <input
             type="text"
@@ -186,6 +180,7 @@ export function App() {
           <em>{carregando}</em>
         </p>
       )}
+
       {resposta &&
         (resposta === "✅ Atendimento finalizado." ? (
           <p id="finalizado">✅ Atendimento finalizado.</p>
